@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const express = require("express");
 const fs = require('fs');
+var bodyParser = require('body-parser');
+
 
 const app = express();
 
@@ -27,6 +29,10 @@ const options = args.reduce((acc, value, index) => {
 if (options.help || !options.har) {
     printHelp();
 } else {
+    app.use(bodyParser.json()); // support json encoded bodies
+    app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+
     app.use(har.getMiddleware(options.har));
     app.use((req, res) => {
         res.status(404).send();
