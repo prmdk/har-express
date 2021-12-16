@@ -102,13 +102,24 @@ function filter(HAR, req, options=DEFAULT_OPTIONS) {
             const withTheSameBody = entries.filter(e => {
                 const data = e.request.postData;
                 if (data) {
-                    return req.body === data.text;
+
+                    let params = {};
+                    data.params.every(p => params[p['name']] = p['value']);
+                    let match = false;
+                    let allParamsMatch = true;
+                    Object.keys(req.body).forEach(function(key) {
+                        if (allParamsMatch) {
+                            allParamsMatch = req.body[key] === params[key];
+                        }
+                        
+                    });
+
+                    return allParamsMatch;
                 }
                 return false;
             });
-            if (withTheSameBody.length > 0) {
-                results = withTheSameBody;
-            }
+            results = withTheSameBody;
+            
         }
         return results;
     }
